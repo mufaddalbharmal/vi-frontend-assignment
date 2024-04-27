@@ -4,17 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { type ColumnDef } from "@tanstack/react-table";
 import { labels, priorities, statuses } from "../_constants/metadata";
 import { type Task } from "../_constants/schema";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useSticky } from 'react-table-sticky';
 
 export const columns: Array<ColumnDef<Task>> = [
-    // {
-    //     accessorKey: "checkbox",
-    //     header: ({ column }) => <span>
-    //         <Checkbox disabled/>
-    //     </span>,
-    //     cell: ({ row }) => <div className="w-[80px]">{row.getValue("checkbox")}</div>,
-    // },
     {
         accessorKey: "id",
         header: ({ column }) => <span>Task</span>,
