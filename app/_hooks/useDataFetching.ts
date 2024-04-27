@@ -6,6 +6,7 @@ import { z } from "zod";
 import { columns } from "../_components/columns";
 import { labels, priorities, statuses } from "../_constants/metadata";
 import { taskSchema } from "../_constants/schema";
+import { Checkbox } from "zod";
 
 const generateData = () => {
     return Array.from({ length: 100 }, () => ({
@@ -19,14 +20,14 @@ const generateData = () => {
 
 export function useDataFetching() {
     const [data, setData] = useState<z.infer<typeof taskSchema>[]>([]);
-
     useEffect(() => {
         const generatedData = generateData();
         setData(generatedData);
     }, []);
 
     return {
-        data: z.array(taskSchema).parse(data),
+        // data: z.array(taskSchema).parse(data),
+        data: data,
         columns: columns,
     };
 }
