@@ -16,6 +16,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { DataTablePagination } from "./data-table-pagination";
+import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -23,7 +24,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-    
+    const [selectedRow, setSelectedRow] = useState(null);
     const table = useReactTable({
         data,
         columns,
@@ -31,32 +32,31 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         getPaginationRowModel: getPaginationRowModel(),
         columnResizeMode: "onChange"
     });
+
+    // TASK : Make first 2 columns (i.e. checkbox and task id) sticky
+    // TASK : Make header columns resizable
+
     return (
         <div className="space-y-4">
             <div className="rounded-md border">
                 <Table style={{minWidth: table.getTotalSize()}}>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow 
-                            key={headerGroup.id}>
-                                {headerGroup.headers.map((header,index) => {
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
                                     return (
                                         <TableHead 
                                         key={header.id} 
-                                        colSpan={header.colSpan}
-                                        className={`${index<2 ? 'sticky bg-white left-0': ""}  
-                                        ${index===1 && 'left-[88px]'}`}
-                                        style={{ width: header.getSize() }}>                                        
+                                        colSpan={header.colSpan} 
+                                        className={header.id === "checkbox" ? "sticky left-0 bg-white" : "" || header.id === "id" ? "sticky left-[88px] bg-white" : ""}
+                                            style={{ width: header.getSize() }}>
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                      header.column.columnDef.header,
-                                                      header.getContext(),
-                                                  )}
-                                        <span className="bg-gray-500 w-[5px] h-[25px] cursor-col-resize select-none touch-none float-right" 
-                                        onTouchStart={header.getResizeHandler()}          
-                                        onMouseDown={header.getResizeHandler()}>
-                                        </span> 
+                                                    header.column.columnDef.header,
+                                                    header.getContext(),
+                                                )}
+                                            <div className="bg-black w-1 h-6 float-right select-none touch-none cursor-col-resize" onMouseDown={header.getResizeHandler()} onTouchStart={header.getResizeHandler()}></div>
                                         </TableHead>
                                     );
                                 })}
@@ -69,18 +69,13 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="hovering"
                                 >
-                                    {row.getVisibleCells().map((cell,index) => (
-                                        <TableCell key={cell.id}
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id} 
                                         onClick={cell.column.id === "checkbox" ? () => {
-                                            table.resetRowSelection(); 
-                                            row.toggleSelected();
+                                            table.resetRowSelection(); row.toggleSelected();
                                         } : () => { }}
-                                        className={`hoveringCell 
-                                        ${!row.getIsSelected() && "bg-white"} ${row.getIsSelected() && "bg-gray-300"}
-                                        ${index<2 ? 'sticky left-0': ""} ${index===1 && 'left-[88px]'}
-                                         `}
+                                            className={`${!row.getIsSelected() && "bg-white"} ${row.getIsSelected() && "bg-gray-300"} ${cell.column.id === "checkbox" && "sticky left-0"} ${cell.column.id === "id" && "sticky left-[88px]"}`}
                                             style={{ width: cell.column.getSize() }}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
@@ -101,6 +96,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 </Table>
             </div>
             <DataTablePagination table={table} />
-        </div>
+        </div >
     );
 }
